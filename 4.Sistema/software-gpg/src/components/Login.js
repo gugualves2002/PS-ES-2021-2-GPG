@@ -55,7 +55,7 @@ export default function Login() {
         </Card.Body>
     </Card>
     <div className='w-100 text-center mt-2'>
-        Não possui uma conta? <Link to="/signup">Cadastre-se</Link>
+        Não possui uma conta? <Link to="/signup" style={{ textDecoration: 'none' }}>Cadastre-se</Link>
     </div>
 
     </>
