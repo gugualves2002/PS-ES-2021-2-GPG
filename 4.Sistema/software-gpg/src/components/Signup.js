@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory} from "react-router-dom";
 import { addDoc, collection } from "firebase/firestore";
 import { db, auth } from "../firebase";
 
@@ -13,10 +13,11 @@ export default function Signup() {
   const { signup } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const history = useHistory();
+ const history = useHistory()
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const userCollectionRef = collection(db, "users");
+  
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -35,8 +36,8 @@ export default function Signup() {
           name: auth.currentUser.email,
           id: auth.currentUser.uid,
         },
-      });
-      history.push("/login");
+      })
+      history.push("/login")
     } catch {
       setError("Falha em criar conta");
     }
@@ -45,35 +46,26 @@ export default function Signup() {
 
   return (
     <>
-      <h1 className="text-center mb-3">GPG</h1>
+    <h1 className="text-center mb-3">GPG</h1>
       <Card>
         <Card.Body>
+          
           <h2 className="text-center mb-4">Cadastre-se</h2>
 
           {error && <Alert variant="danger">{error}</Alert>}
           <Form onSubmit={handleSubmit}>
-            <Form.Group id="name">
+          <Form.Group id="name">
               <Form.Label>Nome</Form.Label>
-              <Form.Control
-                type="text"
-                ref={userNameRef}
-                onChange={(event) => {
-                  setUserName(event.target.value);
-                }}
-                required
-              />
+              <Form.Control type="text" ref={userNameRef}  onChange={(event) => {
+              setUserName(event.target.value);
+            }} required />
             </Form.Group>
 
             <Form.Group id="email">
               <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                ref={emailRef}
-                onChange={(event) => {
-                  setEmail(event.target.value);
-                }}
-                required
-              />
+              <Form.Control type="email" ref={emailRef}  onChange={(event) => {
+              setEmail(event.target.value);
+            }} required />
             </Form.Group>
 
             <Form.Group id="password">
@@ -85,7 +77,7 @@ export default function Signup() {
               <Form.Label>Confirme a senha</Form.Label>
               <Form.Control type="password" ref={passwordConfirmRef} required />
             </Form.Group>
-            <Button disabled={loading} className="w-100 mt-4" type="submit">
+            <Button disabled={loading} className='w-100 mt-4' type='submit' >
               Cadastrar
             </Button>
           </Form>
