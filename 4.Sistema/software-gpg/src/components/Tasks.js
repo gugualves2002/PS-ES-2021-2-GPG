@@ -1,17 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { getDocs, collection, deleteDoc, doc, query, where } from "firebase/firestore";
+import {
+  getDocs,
+  collection,
+  deleteDoc,
+  doc,
+  query,
+  where,
+} from "firebase/firestore";
 import { Card, Button } from "react-bootstrap";
-import { auth, db } from "../firebase";
+import { db } from "../firebase";
 
 function Home() {
   const [taskLists, setTaskLists] = useState([]);
   const taskCollectionRef = collection(db, "tasks");
+  const userCollectionRef = collection(db, "users");
 
   useEffect(() => {
     const getTasks = async () => {
-      const data = await getDocs(query(taskCollectionRef, where ("workers" , "==", localStorage.getItem("uid")))) 
-      
-      setTaskLists(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      const id = await localStorage.getItem("uid");
+      const userData = await getDocs(
+        query(userCollectionRef, where("author.id", "==", id))
+      );
+      const statusUser = userData.docs[0].data().role;
+      const logUser = userData.docs[0].data();
+      if (statusUser === "employee") {
+        const data = await getDocs(
+          query(taskCollectionRef, where("author.name", "==", logUser.email))
+        );
+
+        setTaskLists(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      }
+      if (statusUser === "admin") {
+        const data = await getDocs(taskCollectionRef);
+        setTaskLists(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      }
     };
     getTasks();
   }, []);
@@ -19,6 +41,7 @@ function Home() {
   const deleteTask = async (id) => {
     const taskDoc = doc(db, "tasks", id);
     await deleteDoc(taskDoc);
+    window.location.reload();
   };
   return (
     <div>
@@ -30,12 +53,14 @@ function Home() {
                 <h1>{task.title}</h1>
               </Card.Title>
               <Card.Text>{task.text}</Card.Text>
+              <Card.Text>{task.remark}</Card.Text>
+              <Card.Text>{task.author.name}</Card.Text>
 
               <Button
                 onClick={() => {
                   deleteTask(task.id);
                 }}
-                className="btn btn-danger"
+                className="btn btn-danger delete-button"
               >
                 Excluir
               </Button>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Component } from "react";
+import React, { useState, useEffect} from "react";
 import { Card, Button } from "react-bootstrap";
 import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db, auth } from "../firebase";
@@ -9,7 +9,9 @@ function Task() {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [workers, setWorkers] = useState("");
+  const [remark, setRemark] = useState("");
   const [options, setOptions] = useState();
+  const [currentRole, setCurrentRole] = useState();
   const taskCollectionRef = collection(db, "tasks");
   const usersCollectionRef = collection(db, "users");
   const history = useHistory();
@@ -18,8 +20,11 @@ function Task() {
     const getUsers = async () => {
       const users = await getDocs(usersCollectionRef);
       const buildOptions = users.docs.map((userData) => {
-        const user = userData.data();
-
+      const user = userData.data();
+        if(auth.currentUser.email === user.email){
+          setCurrentRole(user.role)
+        }
+        
         return { label: user.userName, value: user.author.id };
       });
       setOptions(buildOptions);
@@ -32,6 +37,7 @@ function Task() {
       title,
       text,
       workers,
+      remark,
       author: {
         name: auth.currentUser.email,
         id: auth.currentUser.uid,
@@ -43,35 +49,49 @@ function Task() {
   return (
     <>
       <h1 className="text-center mb-3">Crie uma nova task</h1>
-      <Card>
+      <Card  border="secondary" >
         <Card.Body>
-          <Card.Title>
+          <Card.Title >
             <input
-              className="w-100 mb-3"
+              className="w-100 "
               placeholder="Nome da task:"
+              
               onChange={(event) => {
                 setTitle(event.target.value);
               }}
+              required
             ></input>
           </Card.Title>
           <Card.Text>
-            <input
-              className=" w-100"
+            <textarea
+              className=" w-100 inputs-container" 
+              style={{height: 100}}
               placeholder="Descrição da task:"
               onChange={(event) => {
                 setText(event.target.value);
               }}
-            ></input>
+            ></textarea>
           </Card.Text>
-          <Select
+          <Card.Text>
+            <textarea
+              className=" w-100 inputs-container"
+              style={{height: 100}}
+              placeholder="Observações:"
+              onChange={(event) => {
+                setRemark(event.target.value);
+              }}
+            ></textarea>
+          </Card.Text>
+          {currentRole === "admin" && <Select
             defaultValue={workers}
             options={options}
             onChange={(newValue) => {
               setWorkers(newValue.value);
             }}
-          />
+          /> }
+          
         </Card.Body>
-        <Button className="w-100 mt-4" onClick={createTask}>
+        <Button className=" mt-4 mb-4"  onClick={createTask}>
           Criar
         </Button>
       </Card>

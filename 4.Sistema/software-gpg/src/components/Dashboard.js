@@ -35,7 +35,7 @@ export default function Dashboard() {
           <Link
             to="/tasks"
             style={{ textDecoration: "none" }}
-            className="btn btn-primary w-100 mt-3"
+            className="btn btn-outline-primary w-100 mt-3"
           >
             Abrir painel
           </Link>
