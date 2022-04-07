@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Button } from "react-bootstrap";
 import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db, auth } from "../firebase";
@@ -20,12 +20,12 @@ function Task() {
     const getUsers = async () => {
       const users = await getDocs(usersCollectionRef);
       const buildOptions = users.docs.map((userData) => {
-      const user = userData.data();
-        if(auth.currentUser.email === user.email){
-          setCurrentRole(user.role)
+        const user = userData.data();
+        if (auth.currentUser.email === user.email) {
+          setCurrentRole(user.role);
         }
-        
-        return { label: user.userName, value: user.author.id };
+
+        return { label: user.userName, value: user.author.name };
       });
       setOptions(buildOptions);
     };
@@ -49,13 +49,12 @@ function Task() {
   return (
     <>
       <h1 className="text-center mb-3">Crie uma nova task</h1>
-      <Card  border="secondary" >
+      <Card border="secondary">
         <Card.Body>
-          <Card.Title >
+          <Card.Title>
             <input
               className="w-100 "
               placeholder="Nome da task:"
-              
               onChange={(event) => {
                 setTitle(event.target.value);
               }}
@@ -64,8 +63,8 @@ function Task() {
           </Card.Title>
           <Card.Text>
             <textarea
-              className=" w-100 inputs-container" 
-              style={{height: 100}}
+              className=" w-100 inputs-container"
+              style={{ height: 100 }}
               placeholder="Descrição da task:"
               onChange={(event) => {
                 setText(event.target.value);
@@ -75,23 +74,24 @@ function Task() {
           <Card.Text>
             <textarea
               className=" w-100 inputs-container"
-              style={{height: 100}}
+              style={{ height: 100 }}
               placeholder="Observações:"
               onChange={(event) => {
                 setRemark(event.target.value);
               }}
             ></textarea>
           </Card.Text>
-          {currentRole === "admin" && <Select
-            defaultValue={workers}
-            options={options}
-            onChange={(newValue) => {
-              setWorkers(newValue.value);
-            }}
-          /> }
-          
+          {currentRole === "admin" && (
+            <Select
+              defaultValue={workers}
+              options={options}
+              onChange={(newValue) => {
+                setWorkers(newValue.value);
+              }}
+            />
+          )}
         </Card.Body>
-        <Button className=" mt-4 mb-4"  onClick={createTask}>
+        <Button className=" mt-4 mb-4" onClick={createTask}>
           Criar
         </Button>
       </Card>

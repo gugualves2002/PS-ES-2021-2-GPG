@@ -12,6 +12,7 @@ import { db } from "../firebase";
 
 function Home() {
   const [taskLists, setTaskLists] = useState([]);
+  const [workerList, setWorkerList] = useState([])
   const taskCollectionRef = collection(db, "tasks");
   const userCollectionRef = collection(db, "users");
 
@@ -25,10 +26,18 @@ function Home() {
       const logUser = userData.docs[0].data();
       if (statusUser === "employee") {
         const data = await getDocs(
-          query(taskCollectionRef, where("author.name", "==", logUser.email))
+          query(taskCollectionRef, 
+            where("author.name", "==", logUser.email)
+           )
         );
-
+        const logData = await getDocs(
+          query(taskCollectionRef,
+            where("workers", "==",logUser.email))
+        )
+        setWorkerList(logData.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
         setTaskLists(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+        
+        
       }
       if (statusUser === "admin") {
         const data = await getDocs(taskCollectionRef);
@@ -59,6 +68,29 @@ function Home() {
               <Button
                 onClick={() => {
                   deleteTask(task.id);
+                }}
+                className="btn btn-danger delete-button"
+              >
+                Excluir
+              </Button>
+            </Card.Body>
+          </Card>
+        );
+      })}
+      {workerList.map((workTask) => {
+        return (
+          <Card>
+            <Card.Body>
+              <Card.Title>
+                <h1>{workTask.title}</h1>
+              </Card.Title>
+              <Card.Text>{workTask.text}</Card.Text>
+              <Card.Text>{workTask.remark}</Card.Text>
+              <Card.Text>{workTask.author.name}</Card.Text>
+
+              <Button
+                onClick={() => {
+                  deleteTask(workTask.id);
                 }}
                 className="btn btn-danger delete-button"
               >
